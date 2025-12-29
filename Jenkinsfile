@@ -7,6 +7,7 @@ pipeline {
     }
     environment{
         COURSE = "Jenkins"
+        appVersion = ""
     }
     options {
         //timeout(time: 10, unit: 'SECONDS') 
@@ -16,24 +17,33 @@ pipeline {
     stages {
         stage('Read Version') {
             steps {
-                script {
-                    def packageJSON = readJSON file: 'package.json'
-                    appVersion = packageJSON.version 
-                    echo "app version: ${appVersion}"                   
-                }
+                script { 
+                    def packageJson = readJSON file: 'package.json'
+                    appVersion = packageJSON.version
+                    echo "app version: ${appVersion}"
+                    }
                 
             }
         }
-        stage('Install Dependence') {
+        stage('Test') {
             steps {
                script {
                     sh """
-                      npm install
+                        echo "Testing"
+                        echo $COURSE
                     """
                }
             }
         }
         stage('Deploy') {
+            // input {
+            //     message "Should we continue?"
+            //     ok "Yes, we should."
+            //     submitter "alice,bob"
+            //     parameters {
+            //         string(name: 'PERSON', defaultValue: 'Mr Jenkins', description: 'Who should I say hello to?')
+            //     }
+             // }
             when {
                 expression {"$params.DEPLOY"}
             }
