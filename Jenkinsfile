@@ -34,6 +34,16 @@ pipeline {
                }
             }
         }
+        stage('Build Image') {
+            steps {
+               script {
+                    sh """
+                      docker build -t cataogue:${appVersion} .
+                      docker images
+                    """
+               }
+            }
+        }
         stage('Deploy') {
             // input {
             //     message "Should we continue?"
