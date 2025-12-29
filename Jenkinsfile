@@ -39,11 +39,11 @@ pipeline {
         }
         stage('Unit Test') {
             steps {
-               script {
+                script{
                     sh """
-                       npm test
+                        npm test
                     """
-               }
+                }
             }
         }
         stage('Build Image') {
