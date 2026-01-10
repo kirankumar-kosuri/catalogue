@@ -39,7 +39,7 @@ pipeline {
             steps {
                 script {
                     sh """
-                        docker built -t catalogue:${appVersion} .
+                        docker build -t catalogue:${appVersion} .
                         docker images
                     """
                 }
