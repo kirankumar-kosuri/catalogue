@@ -8,7 +8,7 @@ pipeline {
     environment {
         COURSE = "Jenkins"
         appVersion = ""
-        ACC_ID = "160885265516"
+        ACC_ID = "850017502474"
         PROJECT = "roboshop"
         COMPONENT = "catalogue"
     }
@@ -36,6 +36,18 @@ pipeline {
                 }
             }
         }
+        stage('Unit Test') {
+            steps {
+                script{
+                    sh """
+                        npm test
+                    """
+                }
+            }
+        }
+    }
+    
+
         stage('Build Image') {
             steps {
                 script{
@@ -50,7 +62,7 @@ pipeline {
                 }
             }
         }
-        
+
     post{
         always{
             echo 'I will always say Hello again!'
