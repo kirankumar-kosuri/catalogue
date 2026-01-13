@@ -14,39 +14,48 @@ pipeline {
         timeout(time: 10, unit: 'MINUTES') 
         disableConcurrentBuilds()
     }
+
     // This is Build Section
     stages {
-        stage('Read Version') {
+        stage('Build') {
             steps {
-                script {
-                    def packageJSON = readJSON file: 'package.json'
-                    appVersion = packageJSON.version
-                    echo "app version : ${appVersion}"
+                script { 
+                        def packageJSON = readJSON file: 'package.json'
+                        appVersion = packageJSON.version
+                        echo "app version: ${appVersion}"
                 }
             }
         }
-        stage('Install Dependence') {
+        stage('Test') {
             steps {
                 script {
                     sh """
-                        npm install
+                        echo "Testing"
                     """
                 }
             }
         }
-        stage('Build Image') {
-           
+        stage('Deploy') {
+            // input {
+            //     message "Should we continue?"
+            //     ok "Yes, we should."
+            //     submitter "alice,bob"
+            //     parameters {
+            //         string(name: 'PERSON', defaultValue: 'Mr Jenkins', description: 'Who should I say hello to?')
+            //     }
+            // }
+            when {
+                 expression { "$params.DEPLOY" == "true"} 
+            }
             steps {
                 script {
                     sh """
-                        docker build -t catalogue:${appVersion} .
-                        docker images
+                        echo "Deploying"
                     """
                 }
             }
         }
     }
-    
     // This are post build section
     post {
         always {
