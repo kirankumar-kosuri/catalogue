@@ -1,15 +1,14 @@
 pipeline {
-    // These are pre build section
-    agent  {
+    // These are pre-build sections
+    agent {
         node {
             label 'AGENT-1'
         }
     }
-    
     environment {
-        COURSE = "Jenkins CICD"
+        COURSE = "Jenkins"
         appVersion = ""
-        ACC_ID = "850017502474"
+        ACC_ID = "160885265516"
         PROJECT = "roboshop"
         COMPONENT = "catalogue"
     }
@@ -17,57 +16,54 @@ pipeline {
         timeout(time: 10, unit: 'MINUTES') 
         disableConcurrentBuilds()
     }
-
-    // This is Build Section
+    // This is build section
     stages {
         stage('Read Version') {
             steps {
-                script { 
-                        def packageJSON = readJSON file: 'package.json'
-                        appVersion = packageJSON.version
-                        echo "app version: ${appVersion}"
+                script{
+                    def packageJSON = readJSON file: 'package.json'
+                    appVersion = packageJSON.version
+                    echo "app version: ${appVersion}"
                 }
             }
         }
         stage('Install Dependencies') {
             steps {
-                script {
+                script{
                     sh """
                         npm install
                     """
                 }
             }
         }
-        stage('Image Build') {
+        stage('Build Image') {
             steps {
-                script {
+                script{
                     withAWS(region:'us-east-1',credentials:'aws-creds') {
-                    sh """
-                        aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com
+                        sh """
+                            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com
                             docker build -t ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${PROJECT}/${COMPONENT}:${appVersion} .
                             docker images
                             docker push ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${PROJECT}/${COMPONENT}:${appVersion}
-
-                    """
+                        """
+                    }
                 }
             }
         }
-    }
-}
-    // This are post build section
-    post {
-        always {
+        
+    post{
+        always{
             echo 'I will always say Hello again!'
             cleanWs()
         }
         success {
-            echo "I will Run if Success"
+            echo 'I will run if success'
         }
         failure {
-            echo "I will Run if Failure"
+            echo 'I will run if failure'
         }
         aborted {
-            echo " Jenkins Pipelines are aborted "
+            echo 'pipeline is aborted'
         }
     }
 }
